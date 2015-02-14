@@ -25,7 +25,9 @@ class Color(object):
 
 class Config(object):
     sublime = True
-    board_piece_size = 64
+    piece_size = 42     # chess piece square size
+    piece_border = 8    # chess piece border size
+    box_size = piece_size + piece_border
     tick_rate = 0.1
 
 
@@ -41,7 +43,7 @@ def init_pygame():
     screen_x = screen_info.current_w
     screen_y = screen_info.current_h
 
-    min_resolution = Config.board_piece_size * 8
+    min_resolution = Config.box_size * 8
 
     if (screen_x == -1 or screen_y == -1):
         print("display info error, or your version of pygame is too old")
@@ -104,19 +106,37 @@ class Pychess(object):
 
     def game_tick(self):
         self.get_input()
-        self.update()
         self.draw_screen()
 
     def get_input(self):
-        pass
+        for event in pygame.event.get():
+            if event.type == pygame.locals.QUIT:
+                stop_game()
+            elif event.type == pygame.locals.KEYDOWN:
+                if event.key == pygame.locals.K_ESCAPE:
+                    stop_game()
 
-    def draw_screen():
+    def draw_screen(self):
         self.draw_background()
         self.draw_board()
         self.window.update()
 
-    def draw_background():
-        pass
+    def draw_background(self):
+        size = Config.box_size
+        self.screen.fill(Color.BLACK)
+        for row in range(8):
+            if row % 2 == 0:
+                for col in range(8):
+                    if col % 2 == 0:
+                        rect = pygame.Rect((row*size, col*size), (size,size))
+                        pygame.draw.rect(self.screen, Color.GREEN, rect)
+
+        for row in range(0, 8):
+            if row % 2 == 1:
+                for col in range(0, 8):
+                    if col % 2 == 1:
+                        rect = pygame.Rect((row*size, col*size), (size,size))
+                        pygame.draw.rect(self.screen, Color.GREEN, rect)
 
     def update_tick(self):
         pass
